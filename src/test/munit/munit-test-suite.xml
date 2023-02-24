@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="munit-test-suite.xml" />
+	<munit:test name="munit-test-suite-munitFlowTest" doc:id="87dccadc-6221-4ae1-a542-f119f4b11259" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="af637b09-969a-4ac2-b05a-52c506588c90" >
+				<munit:attributes value='#[{queryParams:{firstname:"manjunath",lastname:"royal"}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to munitFlow" doc:id="7967eb6a-8fee-426b-93e1-c9f71369974a" name="munitFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="e2c7b52c-9c09-4122-b165-85dc8560323f" actual="#[payload.message]" expected='#["my name is manjunathroyal"]' message='#["Expected output not came"]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="assertthat" doc:id="f0aedfac-ae4f-4cc9-b882-8ded70f75707" >
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="39603b25-da34-49ab-8259-85c7de0ed5bd" >
+				<munit:attributes value='#[{queryParams:{firstname:"manjunath",lastname:"royal"}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow Reference" doc:id="2b03fa18-4c8e-465a-aec0-05dcab193ef5" name="munitFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="a1479d84-2928-48e6-8e31-2d4c19513e60" expression="#[payload.message]" is='#[MunitTools::equalTo("my name is manjunathroyal")]' message='#["expected output notcame"]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="assertexpression" doc:id="8d6f5e39-b885-4132-8376-5b5f2c01afca" >
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="7e7a0c48-73e3-423b-a914-2b481285a9ae" >
+				<munit:attributes value='#[{queryParams:{firstname:"manjunath",lastname:"royal"}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow Reference" doc:id="a2a2bfc3-5a67-4e7e-8c20-46179f242160" name="munitFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert expression" doc:id="44ae87d4-7d1c-4479-93ac-79eae6649085" >
+				<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload must equalTo({"message":"my name is manjunathroyal"})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="AssertionusingDW" doc:id="e49c8477-e38f-489c-b703-bca03be62b6f" >
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="f422a87f-dad1-4d4d-87f3-650ab48e6ddb" >
+				<munit:attributes value='#[{queryParams:{firstname:"manjunath",lastname:"royal"}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow Reference" doc:id="36df6d14-9a0d-4702-88ed-19055d702e09" name="munitFlow"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert doc:name="Assert expression" doc:id="d4d7a69f-9e14-4b55-a732-2e048ae36f1f" >
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import Hello::hello
+---
+hello::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

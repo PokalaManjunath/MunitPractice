@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="f5f67007-f694-4a1e-8946-9db9ca7a9bd9" >
+		<http:listener-connection host="0.0.0.0" port="8014" />
+	</http:listener-config>
+	<flow name="munitFlow" doc:id="b19726ff-e875-4b5d-b7ca-978f97cb71c2" >
+		<http:listener doc:name="Listener" doc:id="49303e54-26a9-4887-bc4b-0d9f17488855" config-ref="HTTP_Listener_config" path="/unit"/>
+		<logger level="INFO" doc:name="Logger" doc:id="71e1d51e-9662-45a9-94cd-7e359542278e" message="starting flow"/>
+		<ee:transform doc:name="Transform Message" doc:id="1a7daf98-7c4e-42df-88bd-4c75e3f1fd24" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "my name is " ++ (message.attributes.queryParams.firstname as String default "") ++ (message.attributes.queryParams.lastname as String default "")
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="5b969db5-86f0-4f10-9d67-46ad7b5c9384" message="ending flow"/>
+	</flow>
+</mule>

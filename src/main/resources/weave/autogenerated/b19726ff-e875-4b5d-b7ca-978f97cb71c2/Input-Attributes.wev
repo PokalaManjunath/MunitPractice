@@ -1,0 +1,9 @@
+%dw 2.0
+
+type auto_b19726ff_e875_4b5d_b7ca_978f97cb71c2_Input_Attributes = {|
+  queryParams: {|
+    firstname: String, 
+    lastname: String
+  |}
+|}
+
