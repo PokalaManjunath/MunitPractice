@@ -61,6 +61,22 @@ hello::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-t
 			</munit-tools:assert>
 		</munit:validation>
 	</munit:test>
+	<munit:test name="dwlin_execution_input" doc:id="5ec11be7-99d6-491c-b19c-9664a0127039" >
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="f4acdb13-f2ea-4d1f-9ac8-fd1a6cbb6d45" >
+				<munit:attributes value="#[readUrl('classpath://Hello/hello_input.dwl')]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow Reference" doc:id="2f1f339d-1a7b-4f28-8e80-14335d4ffc50" name="munitFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert expression" doc:id="a710a5df-6ecf-4020-b928-335b0148575e" >
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import Hello::hello
+---
+hello::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
 
 
 </mule>
