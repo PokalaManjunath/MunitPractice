@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="f5f67007-f694-4a1e-8946-9db9ca7a9bd9" >
 		<http:listener-connection host="0.0.0.0" port="8014" />
 	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="e9035452-a439-4157-ac9c-a7be86c845a3" >
+		<db:my-sql-connection host="b4qi10m6jtplv7e7fgfv-mysql.services.clever-cloud.com" port="3306" user="uji3yqdlyzbqadtu" password="xidtsmUmJsX7OUOnf4w4" database="b4qi10m6jtplv7e7fgfv" />
+	</db:config>
+	<db:config name="Database_Config1" doc:name="Database Config" doc:id="328b323c-ff09-4f4f-9e48-bb1e4c132dc8" >
+		<db:my-sql-connection host="b4qi10m6jtplv7e7fgfv-mysql.services.clever-cloud.com" port="3306" user="uji3yqdlyzbqadtu" password="xidtsmUmJsX7OUOnf4w4" database="b4qi10m6jtplv7e7fgfv" />
+	</db:config>
 	<flow name="munitFlow" doc:id="b19726ff-e875-4b5d-b7ca-978f97cb71c2" >
 		<http:listener doc:name="Listener" doc:id="49303e54-26a9-4887-bc4b-0d9f17488855" config-ref="HTTP_Listener_config" path="/unit"/>
 		<logger level="INFO" doc:name="Logger" doc:id="71e1d51e-9662-45a9-94cd-7e359542278e" message="starting flow"/>
@@ -22,5 +29,131 @@ output application/json
 			</ee:message>
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="5b969db5-86f0-4f10-9d67-46ad7b5c9384" message="ending flow"/>
+	</flow>
+	<flow name="Flow" doc:id="5ffd1ed3-8e3a-4fc6-945e-41168c9c44f5" >
+		<http:listener doc:name="Listener" doc:id="43cc1f87-0e0d-4454-a763-6da01adc54f1" config-ref="HTTP_Listener_config" path="/spyevent" allowedMethods="POST"/>
+		<logger level="INFO" doc:name="Logger" doc:id="0c13018a-fe53-4dff-9cdb-13981ea97fca" message="Starting flow"/>
+		<ee:transform doc:name="Transform Message" doc:id="23273219-f436-48c8-a715-7c00c9d82c9b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "name": payload.employeeName,
+    "job": payload.title
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request" doc:id="aba37ea7-44c8-41ac-b731-f4c909c556fa" url="https://reqres.in/api/users"/>
+		<logger level="INFO" doc:name="Logger" doc:id="90f70f92-c6c7-4908-99ed-fa340c99cfc8" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="fa280b11-2f4b-4fd6-a473-00a347b553ba" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status":200,
+	"message":"Success"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="d79fbb88-85cc-4aca-9104-cca735f5d32f" message="Flowend"/>
+	</flow>
+	<flow name="munitFlow1" doc:id="d4ac4c88-1258-43e7-93ee-28347e41ba8b" >
+		<http:listener doc:name="Listener" doc:id="917fd2b8-7354-495e-8ec8-961d3e4043a2" config-ref="HTTP_Listener_config" path="database"/>
+		<logger level="INFO" doc:name="Logger" doc:id="6286d2fb-48a2-4421-b08a-0d4ba13d6d20" message="Starting flow"/>
+		<ee:transform doc:name="Transform Message" doc:id="27d304c5-6a30-49db-bf79-ab672d4d2e31" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="InputData" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"queryParam": message.attributes.queryParams
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="7cd04770-1ff0-4a1c-b92a-29c552241365" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var flagStatename = if (vars.InputData.queryParam.StateName == "" or vars.InputData.queryParam.StateName == null) (false) else (true)
+---
+if (flagStatename == false) ("SELECT `Sno`, `State`, `capitalCity`, `CM`, `Governer`, `LoksabaSeats`, `Rajyasabhaseats`, `AreawiseRank`, `PopulationRank`, `Language` FROM `newtable`") else ("SELECT `Sno`, `State`, `capitalCity`, `CM`, `Governer`, `LoksabaSeats`, `Rajyasabhaseats`, `AreawiseRank`, `PopulationRank`, `Language` FROM `newtable` where State = '" ++ vars.InputData.queryParam.StateName ++ "'")]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:select doc:name="Select" doc:id="d460f45d-4a11-4a66-b772-ed99d1b1bb4e" config-ref="Database_Config">
+			<db:sql ><![CDATA[#[payload]]]></db:sql>
+		</db:select>
+		<logger level="INFO" doc:name="Logger" doc:id="8c7d9bd2-981e-44e4-94ed-5cc608ae4e78" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="92f43803-5389-42f6-8c69-0211c5ca8db2">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="a9e1dc6e-a24f-42b2-bc58-f2f88e37c143" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map {
+    	"State Name": $.State,
+	"capitalCity": $.capitalCity,
+	"Chief Minister": $.CM,
+	"Governer": $.Governer,
+	"LoksabaSeats": $.LoksabaSeats, 
+	"Rajyasabhaseats": $.Rajyasabhaseats,
+	"Total MP seats": $.LoksabaSeats + $.Rajyasabhaseats,
+	"AreawiseRank": $.AreawiseRank,
+	"PopulationRank": $.PopulationRank,
+	"Language": $.Language
+
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="munitFlow2" doc:id="0f007a96-53e6-47f3-8749-30154b98b232" >
+		<http:listener doc:name="Listener" doc:id="036f5c13-4dbc-4e91-947d-5b05ad452c32" config-ref="HTTP_Listener_config" path="/parameterized"/>
+		<logger level="INFO" doc:name="Logger" doc:id="c12d8486-af90-473d-9169-29b50bc7117c" message="FlowStarting"/>
+		<set-variable value="#[attributes.queryParams.title]" doc:name="Set Variable" doc:id="2503d8c3-e1f0-4b44-ae90-8b5e7d777801" variableName="title"/>
+		<ee:transform doc:name="Transform Message" doc:id="82b877c9-88f4-44af-aadc-701c9e986604" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="designation" ><![CDATA[if (vars.title=="DM") ("DeputyManager")
+else if (vars.title=="JA") ("JeeraAnalyst")
+else if (vars.title=="SE") ("SofwareEngineer")
+else if (vars.title=="SSE") ("SeniorSofwareEngineer")
+else if (vars.title=="AR") ("Archtech")
+else if (vars.title=="TL") ("TestingLead")
+else if (vars.title=="LD") ("LeadDeveloper")
+else ""]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="e26c4aa1-acea-4ca9-a7e1-91180e4386ed" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var design = if (vars.title == "" or vars.title == null) (false) else (true)
+---
+if (design == false) ("SELECT `EmpName`, `EmpDesig`, `EmpAge`, `EmpLoc` FROM `EmployeeData`") else ("SELECT `EmpName`, `EmpDesig`, `EmpAge`, `EmpLoc` FROM `EmployeeData` WHERE `EmpDesig` = '" ++ vars.designation ++ "'")]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:select doc:name="Select" doc:id="0227b787-f661-4518-a451-09f71fd28801" config-ref="Database_Config1">
+			<db:sql ><![CDATA[#[payload]]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="95c1ce87-f8b8-422d-9dbd-942cafe101b1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="a4dcbee0-d1e6-448d-9bdc-1448629c2af8" message="#[payload]"/>
 	</flow>
 </mule>
