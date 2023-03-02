@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
-http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="f5f67007-f694-4a1e-8946-9db9ca7a9bd9" >
 		<http:listener-connection host="0.0.0.0" port="8014" />
 	</http:listener-config>
@@ -13,6 +14,9 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 		<db:my-sql-connection host="b4qi10m6jtplv7e7fgfv-mysql.services.clever-cloud.com" port="3306" user="uji3yqdlyzbqadtu" password="xidtsmUmJsX7OUOnf4w4" database="b4qi10m6jtplv7e7fgfv" />
 	</db:config>
 	<db:config name="Database_Config1" doc:name="Database Config" doc:id="328b323c-ff09-4f4f-9e48-bb1e4c132dc8" >
+		<db:my-sql-connection host="b4qi10m6jtplv7e7fgfv-mysql.services.clever-cloud.com" port="3306" user="uji3yqdlyzbqadtu" password="xidtsmUmJsX7OUOnf4w4" database="b4qi10m6jtplv7e7fgfv" />
+	</db:config>
+	<db:config name="Database_Config2" doc:name="Database Config" doc:id="8354b92c-79cb-413a-bbe9-df3f8b52ad2b" >
 		<db:my-sql-connection host="b4qi10m6jtplv7e7fgfv-mysql.services.clever-cloud.com" port="3306" user="uji3yqdlyzbqadtu" password="xidtsmUmJsX7OUOnf4w4" database="b4qi10m6jtplv7e7fgfv" />
 	</db:config>
 	<flow name="munitFlow" doc:id="b19726ff-e875-4b5d-b7ca-978f97cb71c2" >
@@ -133,18 +137,12 @@ else if (vars.title=="TL") ("TestingLead")
 else if (vars.title=="LD") ("LeadDeveloper")
 else ""]]></ee:set-variable>
 			</ee:variables>
-		</ee:transform>
-		<ee:transform doc:name="Transform Message" doc:id="e26c4aa1-acea-4ca9-a7e1-91180e4386ed" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
-var design = if (vars.title == "" or vars.title == null) (false) else (true)
----
-if (design == false) ("SELECT `EmpName`, `EmpDesig`, `EmpAge`, `EmpLoc` FROM `EmployeeData`") else ("SELECT `EmpName`, `EmpDesig`, `EmpAge`, `EmpLoc` FROM `EmployeeData` WHERE `EmpDesig` = '" ++ vars.designation ++ "'")]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
+		</ee:transform>  
 		<db:select doc:name="Select" doc:id="0227b787-f661-4518-a451-09f71fd28801" config-ref="Database_Config1">
-			<db:sql ><![CDATA[#[payload]]]></db:sql>
+			<db:sql ><![CDATA[SELECT `EmpName`, `EmpDesig`, `EmpAge`, `EmpLoc` FROM `EmployeeData` WHERE `EmpDesig` = :emp_desig]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	"emp_desig": vars.designation
+}]]]></db:input-parameters>
 		</db:select>
 		<ee:transform doc:name="Transform Message" doc:id="95c1ce87-f8b8-422d-9dbd-942cafe101b1" >
 			<ee:message >
@@ -155,5 +153,82 @@ payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="a4dcbee0-d1e6-448d-9bdc-1448629c2af8" message="#[payload]"/>
+		<choice doc:name="Choice" doc:id="bfa7fcce-ba9e-4c80-9a71-b8693cff1b4a" >
+			<when expression="#[sizeOf(payload)&gt;0]">
+				<ee:transform doc:name="Transform Message" doc:id="3b7497a6-d34f-49c4-9b9a-f83c7655c224" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map {
+	"Employee Name": $.EmpName,
+	"Employee Designation": $.EmpDesig,
+	"Employee Work Location": $.EmpLoc,
+	"Employee Age": $.EmpAge
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="50dc5bb9-b18c-4d35-bb0d-5a0d21985d52" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"StatusCode": 400,
+	"Message": "Unable to find Employee details"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="8d15e86e-0ee6-495f-8b56-fffbd4170803" message="flowEnds"/>
+	</flow>
+	<flow name="munitFlow3" doc:id="f8d395f5-97bd-4993-a9b8-cc2841ded93f" >
+		<http:listener doc:name="Listener" doc:id="8e7e4312-3a54-4238-8f3f-05cad7153a51" config-ref="HTTP_Listener_config" path="/resourse/{EmpId}"/>
+		<logger level="INFO" doc:name="Logger" doc:id="a9833b18-39b1-4994-9fde-04b880dbfc69" message="flow starts"/>
+		<validation:is-number numberType="INTEGER" doc:name="Is number" doc:id="d96d0511-c813-4ed0-a046-28d8b5a89c66" value="#[message.attributes.uriParams.EmpId]" message="Provided empId not Number"/>
+		<set-variable value="#[message.attributes.uriParams.EmpId]" doc:name="Set Variable" doc:id="663ab6ac-6942-460c-b477-43dc6da276bc" variableName="number"/>
+		<ee:transform doc:name="Transform Message" doc:id="2fde367a-8866-4e26-af81-cb0eca5b672b">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="0ae2d8ac-d6f5-41ec-a348-89420d7e5ddc" >
+			<db:insert doc:name="Insert" doc:id="2314ba8d-7c6c-4e03-ab4e-6e865e71dbf1" config-ref="Database_Config2">
+			<db:sql><![CDATA[INSERT INTO `EmployeeData`(`EmpName`, `EmpDesig`, `EmpAge`, `EmpLoc`) VALUES (:EmpName,:EmpDesig,:EmpAge,:EmpLoc)]]></db:sql>
+			<db:input-parameters><![CDATA[#[payload]]]></db:input-parameters>
+		</db:insert>
+		</foreach>
+		<ee:transform doc:name="Transform Message" doc:id="0e1b777e-45dc-44f6-96fd-0138d89ea936" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Status": 200,
+	"Message": "Employee created"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="54c56aad-57ef-4534-a24e-7ac49087e996" type="VALIDATION:INVALID_NUMBER">
+				<ee:transform doc:name="Transform Message" doc:id="e6249061-2d01-46ba-96e5-b542b38473b2">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status": 400,
+	"message": error.description
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
 	</flow>
 </mule>

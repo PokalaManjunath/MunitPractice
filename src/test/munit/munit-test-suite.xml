@@ -7,7 +7,9 @@
 		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
-	<munit:config name="munit-test-suite.xml" />
+	<munit:config name="munit-test-suite.xml" >
+		<munit:parameterizations file="parameter.yaml" />
+	</munit:config>
 	<munit:test name="munit-test-suite-munitFlowTest" doc:id="87dccadc-6221-4ae1-a542-f119f4b11259" description="Test">
 		<munit:execution >
 			<munit:set-event doc:name="Set Event" doc:id="af637b09-969a-4ac2-b05a-52c506588c90" >
@@ -153,6 +155,29 @@ apiresponse::main({payload: payload, vars: vars, attributes: attributes})]]]></m
 					<munit-tools:with-attribute whereValue="Request" attributeName="doc:name" />
 				</munit-tools:with-attributes>
 			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="munit-test-suiteTest2" doc:id="1c3e4868-5756-49b2-8e51-4f0e6f65bb69" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="0085b150-a2ad-457e-97cd-db339de8ab1d" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="0227b787-f661-4518-a451-09f71fd28801" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- read(Mule::p('mock_payload'),&quot;application/json&quot;)]" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="5b387eaa-672c-4ad2-9f4b-3895ef4cee06" >
+				<munit:payload mediaType="application/avro" />
+				<munit:attributes value="#[&quot;queryParams&quot;:{'title':Mule::p('title')}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow Reference" doc:id="c3ab50ec-7cac-40f6-9b26-7223054c177d" name="munitFlow2"/>
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Logger" doc:id="bd06f6d2-f9b1-472b-b1b4-c7d876ff2fdd" message="#[payload]"/>
+			<munit-tools:assert doc:name="Assert expression" doc:id="aaef621f-1687-4f48-acbd-5eefac22920e" />
 		</munit:validation>
 	</munit:test>
 

@@ -1,0 +1,7 @@
+%dw 2.0
+
+type auto_0f007a96_53e6_47f3_8749_30154b98b232_Output_Payload = Array<{|  "Employee Name": String,   "Employee Designation": String,   "Employee Work Location": String,   "Employee Age": String|}> | {|
+  StatusCode: Number, 
+  Message: String
+|}
+

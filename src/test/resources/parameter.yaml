@@ -1,0 +1,24 @@
+first:
+  title: "JA"
+  mock_payload: "[\r\n {\r\n    \"EmpName\": \"Janardan\",\r\n    \"EmpDesig\": \"JeeraAnalyst\",\r\n    \"EmpLoc\": \"Bangalore\",\r\n    \"EmpAge\": \"32\"\r\n  }]"
+second:
+  title: "SE"
+  mock_payload: "[\r\n {\r\n    \"EmpName\": \"Naveendra\",\r\n    \"EmpDesig\": \"SofwareEngineer\",\r\n    \"EmpLoc\": \"Hyderabad\",\r\n    \"EmpAge\": \"33\"\r\n  }]"
+third:
+  title: "SSE"
+  mock_payload: "[\r\n  {\r\n    \"EmpName\": \"Manjunath\",\r\n    \"EmpDesig\": \"SeniorSofwareEngineer\",\r\n    \"EmpLoc\": \"Bangalore\",\r\n    \"EmpAge\": \"32\"\r\n  }]"
+fourth:
+  title: "AR"
+  mock_payload: "[\r\n {\r\n    \"EmpName\": \"Gireesh\",\r\n    \"EmpDesig\": \"Archtech\",\r\n    \"EmpLoc\": \"Chennai\",\r\n    \"EmpAge\": \"34\"\r\n  }]"
+fifth: 
+  title: "TL"
+  mock_payload: "[\r\n  {\r\n    \"EmpName\": \"Narendra\",\r\n    \"EmpDesig\": \"TestingLead\",\r\n    \"EmpLoc\": \"Hyderabad\",\r\n    \"EmpAge\": \"31\"\r\n  }]"
+sixth:
+  title: "DM"
+  mock_payload: "[\r\n {\r\n   \"EmpName\": \"Jagadeesh\",\r\n    \"EmpDesig\": \"DeputyManager\",\r\n    \"EmpLoc\": \"Pune\",\r\n    \"EmpAge\": \"35\"\r\n  }]"
+seventh:
+  title: "LD"
+  mock_payload: "[\r\n {\r\n    \"EmpName\": \"Balaji\",\r\n    \"EmpDesig\": \"LeadDeveloper\",\r\n    \"EmpLoc\": \"Bangalore\",\r\n    \"EmpAge\": \"32\"\r\n  }]"
+eigth: 
+  title: ""
+  mock_payload: "[]"
